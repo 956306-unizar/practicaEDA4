@@ -12,6 +12,7 @@
 #define COLECCIONITF_HPP
 
 #include "fecha.hpp"
+#include "pila_v3.hpp"
 #include <string>
 using namespace std;
 
