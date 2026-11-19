@@ -6,22 +6,34 @@
 ACTUALIZAR OPERACIONES PARA USO DE ARBOLES BINARIOS DE BÚSQUEDA
 ----------------------------------------------------------------------
 
-    [ ] Función añadir
-    [ ] Función borrar
-    [ ] Función iniciarIterador
-    [ ] Función eRisteSiguiente?
-    [ ] Función siguienteYavanza
-    [ ] Función crear
-    [ ] Función actualizar
-    [ ] Función está?
+    ABEL: 
+
     [ ] Función obtenerITF
-    [ ] Función obsoletos
-    [ ] Función purgar
-    [ ] Función existeTema
-    [ ] Función delTema
     [ ] Función zanjarTema
+    [ ] Función borrar
     [ ] Función esVacía?
+    [ ] Función obsoletos
+
+
+    DAVID:
+
+    [ ] Función existeTema
+    [ ] Función iniciarIterador
+    [ ] Función purgar
+    [ ] Función añadir
     [ ] Función tamaño
+
+
+    ARIÁN: 
+    
+    [ ] Función actualizar
+    [ ] Función eRisteSiguiente?
+    [ ] Función delTema
+    [ ] Función está?
+    [ ] Función siguienteYavanza
+        
+        
+    [X] Función crear
 
 
 ======================================================================

@@ -208,14 +208,15 @@ template<typename T> struct ColeccionITF{
        //llamar a nodos asi: typename ColeccionITF<T>::Nodo
         struct Nodo{
             T dato;
-            Nodo* sig;
+            Nodo* izq;
+            Nodo* der;
         };
         
-        Nodo* primero;
+        Nodo* raiz;
         int nElem;
+        
         //CAMPOS ITERADOR
         Nodo* iter;
-
 };
 
 
@@ -227,7 +228,7 @@ template<typename T> struct ColeccionITF{
 template<typename T>
 void crear(ColeccionITF<T> &c)
 {
-    c.primero = nullptr;
+    c.raiz = nullptr;
     c.nElem = 0;
     c.iter = nullptr;
 }
