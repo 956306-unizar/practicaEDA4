@@ -171,7 +171,7 @@ template<typename T> bool siguienteYavanza(ColeccionITF<T> &c, T &e);
 
 // FIN predeclaracion del TAD GENERICO coleccionITF (Fin INTERFAZ)============================================================================
 
-
+//PREDECLARAR FUNCIONES AUXILIARES AQUI!!!!!!!!
 
 
 // DECLARACION DEL TAD GENERICO coleccionITF
@@ -195,6 +195,8 @@ template<typename T> struct ColeccionITF{
     friend bool existeSiguiente<T>(const ColeccionITF<T> &c);
     friend bool siguienteYavanza<T>(ColeccionITF<T> &c, T &e);
 
+    //FRIEND FUNCIONES AUXILIARES!!!!!!!!
+
 
     private: //declaracion de la representacion interna del tipo
        /*
@@ -213,11 +215,13 @@ template<typename T> struct ColeccionITF{
             Nodo* der;
         };
         
-        Nodo* raiz;
+        typedef Nodo* abb;  //tipo PUNTERO A NODO es lo mismo que tipo ABB
+
+        abb raiz;
         int nElem;
         
         //CAMPOS ITERADOR
-        Nodo* iter;
+        Pila iter;
 };
 
 
@@ -244,6 +248,7 @@ void crear(ColeccionITF<T> &c)
 template<typename T> 
 void anadir(ColeccionITF<T> &c, const T &i)
 {    
+    /*
     string ident = identificador(i);
 
     // Si es lista vacia o el primero es mayor, INSERCION AL PRINCIPIO
@@ -282,62 +287,9 @@ void anadir(ColeccionITF<T> &c, const T &i)
             pAux->sig = nuevoElem;
         }
     }
+    */
 }
 
-/*
-    Busca si existe un dato de tipo T, en los nodos que almacena la coleccionITF, que tenga el mismo identificador que el dato de tipo T
-    proporcionado (i). De ser así, el dato que ya se encuentra en la coleccionITF se actualizará con el del parámetro i.
-    Al solo cambiarse el valor de la variable "dato" dentro del nodo que se encuentra en dicha posición, no hará falta hacer más cambios
-    en ninguna otra parte.
-*/
-/*
-template<typename T> 
-void actualizar(ColeccionITF<T> &c, const T &i) {
-
-    // Si la lista se encuentra vacía automáticamente dejaremos de intentar buscar el elemento del género T a actualizar.
-    if(c.primero != nullptr) {
-
-        string identificadorDelNuevoDato = identificador(i);
-        string identificadorDatoActual = identificador(c.primero->dato);
-
-        if(identificadorDelNuevoDato > identificadorDatoActual) {
-
-            // Empezamos comprobando el segundo elemento de la colección, ya que ya se comprobó el primero.
-            typename ColeccionITF<T>::Nodo* pAux = c.primero->sig;
-
-            bool actualizado = false;
-            bool busquedaAunValida = true; // Mientras tenga sentido buscar el elemento debido al orden de los IDs, se seguirá buscando.
-
-            while(pAux != nullptr && !actualizado && busquedaAunValida) {
-
-                identificadorDatoActual = identificador(pAux->dato);
-
-                if(identificadorDelNuevoDato < identificadorDatoActual) {
-
-                    busquedaAunValida = false;
-
-                } else if(identificadorDatoActual == identificadorDelNuevoDato) {
-
-                    pAux->dato = i;
-                    actualizado = true;
-
-                } else {
-                    pAux = pAux->sig;
-
-                }
-
-            }
-
-        } else if(identificadorDelNuevoDato == identificadorDatoActual){
-
-            c.primero->dato = i;
-
-        }
-
-    } 
-
-}
-*/
 
 /*
     Busca si existe un dato de tipo T, en los nodos que almacena la coleccionITF, que tenga el mismo identificador que el dato de tipo T
@@ -347,7 +299,7 @@ void actualizar(ColeccionITF<T> &c, const T &i) {
 */
 template<typename T> 
 void actualizar(ColeccionITF<T> &c, const T &i) {
-
+    /*
     // Cualquier caso posible menos el de lista vacía que nos quedaremos igual
     if(c.primero != nullptr) {
 
@@ -365,7 +317,8 @@ void actualizar(ColeccionITF<T> &c, const T &i) {
         {
             pAux->dato = i;
         }
-    } 
+    }
+    */
 }
 
 
@@ -378,40 +331,41 @@ void actualizar(ColeccionITF<T> &c, const T &i) {
 */
 template<typename T> 
 void borrar(const string &ident, ColeccionITF<T> &c)
-{
-    // Cualquier caso posible menos el de lista vacía que nos quedaremos igual
-    if (c.primero != nullptr)
-    {
-        // Declaración de los punteros auxiliares para ir desplazando la lista
-        typename ColeccionITF<T>::Nodo *pKiller = c.primero;
-        typename ColeccionITF<T>::Nodo *pKiller_ant = nullptr;
+{      
+    borrarRec(ident, c.raiz);
 
-        // Ir desplazando los punteros auxiliares hasta encontrar un nodo >= que ident ó llegar al final de lista
-        while (pKiller->sig != nullptr && ident > identificador(pKiller->dato))
-        {
-            pKiller_ant = pKiller;
-            pKiller = pKiller->sig;
+    /*  ESTO VA EN BORRARREC
+
+    typename ColeccionITF<T>::abb aux = c.raiz
+    if(c.raiz != nullptr){
+        
+        if(ident == aux->dato){ //es este elemento -- CASO BASE
+            //el comportamiento depende de que hijos tenga o no
+
+        }else if(ident < aux->dato){    //estara por el arbol izdo
+            //llamada recursiva a borrar en el hijo dcho
+            borrarRec(ident, c.raiz->der)
+
+        }else{  //estara por el arbol dcho
+            //llamada recursiva a borrar en el hijo dcho
         }
+    }
+    */
+}
 
-        // Comprobar si el nodo donde se ha quedado pKiller es = ident
-        // Este es el único caso que nos interesa, ya que hay que borrar un nodo
-        if (ident == identificador(pKiller->dato))
-        {
-            // Borrado del primer nodo
-            if (pKiller_ant == nullptr)
-            {
-                c.primero = pKiller->sig;
-            }
+template<typename T>
+void borrarRec(const string &ident, typename ColeccionITF<T>::abb &raiz){
+    if(c.raiz != nullptr){
+        
+        if(ident == raiz->dato){ //es este elemento -- CASO BASE
+            //el comportamiento depende de que hijos tenga o no
 
-            // Borrado de cualquier otro (mitad, ultimo, ...)
-            else
-            {
-                pKiller_ant->sig = pKiller->sig;
-            }            
-            
-            delete pKiller;
+        }else if(ident < raiz->dato){    //estara por el arbol izdo
+            //llamada recursiva a borrar en el hijo dcho
+            borrarRec(ident, raiz->der);
 
-            c.nElem--;
+        }else{  //estara por el arbol dcho
+            //llamada recursiva a borrar en el hijo dcho
         }
     }
 }
@@ -425,6 +379,7 @@ void borrar(const string &ident, ColeccionITF<T> &c)
 template<typename T>
 bool esta(const string &ident, const ColeccionITF<T> &c) {
 
+    /*
     bool estaEnColeccion = false;
 
     bool busquedaAunValida = true;
@@ -457,6 +412,7 @@ bool esta(const string &ident, const ColeccionITF<T> &c) {
     }
 
     return estaEnColeccion;
+    */
 
 }
 
@@ -467,7 +423,7 @@ bool esta(const string &ident, const ColeccionITF<T> &c) {
 */
 template<typename T>
 T obtenerITF(const string &ident, const ColeccionITF<T> &c) {
-
+    /*
     typename ColeccionITF<T>::Nodo* pAux = c.primero;
 
     bool encontrado = false;
@@ -489,6 +445,7 @@ T obtenerITF(const string &ident, const ColeccionITF<T> &c) {
     T itfObtenido = pAux->dato;
 
     return itfObtenido;
+    */
     
 }
 
@@ -501,7 +458,7 @@ T obtenerITF(const string &ident, const ColeccionITF<T> &c) {
 */
 template<typename T>
 string obsoletos(const Fecha &f, const string &separador, const ColeccionITF<T> &c) {
-
+    /*
     string ids = "";
 
     if(c.primero != nullptr) {
@@ -527,6 +484,7 @@ string obsoletos(const Fecha &f, const string &separador, const ColeccionITF<T> 
     }
 
     return ids;
+    */
 
 }
  
@@ -537,7 +495,7 @@ string obsoletos(const Fecha &f, const string &separador, const ColeccionITF<T> 
 */
 template<typename T>
 void purgar(const Fecha &f, ColeccionITF<T> &c) {
-
+    /*
     if(c.primero != nullptr) {
 
         typename ColeccionITF<T>::Nodo* pAnt = nullptr;
@@ -580,7 +538,8 @@ void purgar(const Fecha &f, ColeccionITF<T> &c) {
 
         }
 
-    } 
+    }
+    */
 
 }
 
@@ -589,7 +548,7 @@ void purgar(const Fecha &f, ColeccionITF<T> &c) {
 */
 template<typename T>
 bool existeTema(const string &t, const ColeccionITF<T> &c) {
-
+    /*
     bool existe = false;
 
     typename ColeccionITF<T>::Nodo* pAux = c.primero;
@@ -608,7 +567,7 @@ bool existeTema(const string &t, const ColeccionITF<T> &c) {
     }
 
     return existe;
-
+    */
 }
 
 
@@ -618,7 +577,7 @@ bool existeTema(const string &t, const ColeccionITF<T> &c) {
 */
 template<typename T>
 string delTema(const string &t, const string &separador, const ColeccionITF<T> &c) {
-
+    /*
     string ids = "";
 
     // Si la coleccion está vacía se devuelve una cadena vacía directamente.
@@ -647,6 +606,7 @@ string delTema(const string &t, const string &separador, const ColeccionITF<T> &
     }
 
     return ids;
+    */
 
 }
 
@@ -656,7 +616,7 @@ string delTema(const string &t, const string &separador, const ColeccionITF<T> &
 */
 template<typename T>
 void zanjarTema(const string &t, ColeccionITF<T> &c) {
-
+    /*
     if(c.primero != nullptr) {
 
         typename ColeccionITF<T>::Nodo* pAnt = nullptr;
@@ -700,6 +660,7 @@ void zanjarTema(const string &t, ColeccionITF<T> &c) {
         }
 
     }
+    */
 
 }
 
@@ -711,7 +672,7 @@ void zanjarTema(const string &t, ColeccionITF<T> &c) {
 template<typename T>
 bool esVacia(const ColeccionITF<T> &c) {
 
-    return c.nElem == 0;
+    //return c.nElem == 0;
 
 }
 
@@ -722,7 +683,7 @@ bool esVacia(const ColeccionITF<T> &c) {
 template<typename T>
 int tamano(const ColeccionITF<T> &c) {
 
-    return c.nElem;
+    //return c.nElem;
 
 }
 
@@ -739,7 +700,7 @@ int tamano(const ColeccionITF<T> &c) {
 template<typename T>
 void iniciarIterador(ColeccionITF<T> &c){
 
-    c.iter = c.primero;
+    //c.iter = c.primero;
 }
 
 
@@ -750,7 +711,7 @@ void iniciarIterador(ColeccionITF<T> &c){
 template<typename T>
 bool existeSiguiente(const ColeccionITF<T> &c){
 
-    return (c.iter != nullptr);
+    //return (c.iter != nullptr);
 }
 
 
@@ -760,7 +721,7 @@ bool existeSiguiente(const ColeccionITF<T> &c){
 */
 template<typename T>
 bool siguienteYavanza(ColeccionITF<T> &c, T &e){
-
+    /*
     if(existeSiguiente(c)){ //(si no apunta a NIL)
 
         e = c.iter->dato;
@@ -770,6 +731,7 @@ bool siguienteYavanza(ColeccionITF<T> &c, T &e){
     }else{
         return false;
     }
+    s*/
 }
 
 

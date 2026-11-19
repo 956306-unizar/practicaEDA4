@@ -10,7 +10,7 @@ ACTUALIZAR OPERACIONES PARA USO DE ARBOLES BINARIOS DE BÚSQUEDA
 
     [ ] Función obtenerITF
     [ ] Función zanjarTema
-    [ ] Función borrar
+    [ ] Función iniciarIterador
     [ ] Función esVacía?
     [ ] Función obsoletos
 
@@ -18,7 +18,7 @@ ACTUALIZAR OPERACIONES PARA USO DE ARBOLES BINARIOS DE BÚSQUEDA
     DAVID:
 
     [ ] Función existeTema
-    [ ] Función iniciarIterador
+    [ ] Función borrar
     [ ] Función purgar
     [ ] Función añadir
     [ ] Función tamaño
