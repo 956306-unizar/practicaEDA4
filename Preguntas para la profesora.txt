@@ -1,0 +1,10 @@
+Para el uso de las operaciones del parámetro formal ITF de ColeccionITF, cómo deberíamos usarlas en ColeccionITF.hpp? Deberíamos una vez en el main ya relacionar ambas funciones
+"suIdentificador" e "identificador", usadas por anuncio.hpp y coleccionITF.hpp respectivamente?
+
+Funciones a optimizar al máximo. Comparar ejemplos de, por ejemplo, la función "esta" en distintos commits y determinar cuál es más óptima.
+Por ejemplo, la comprobación inicial de si la cadena está vacía.
+
+Deberíamos hacer control de errores, como comprobar que las fechas son correctas, en el apartado 3 al leer el fichero, o asumimos que todo está correcto según el formato?
+Principal.cpp : Linea 180 262 
+
+Que nombre poner al principal? - Uno claro, also solo entregar UN programa con un main

@@ -12,3 +12,9 @@
 !*.cpp
 !*.hpp
 !*.git.exe
+!*.txt
+
+entrada.txt
+salida.txt
+
+!.gitignore
