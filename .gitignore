@@ -1,0 +1,14 @@
+# 1. Ignorar todo en la raíz del proyecto por defecto
+/*
+
+# 2. Permitir explícitamente las carpetas de ejemplos y tests para que Git pueda entrar en ellas
+!/tests/
+!/Ejemplos Entrada - Salida correctos/
+
+# 3. Permitir los archivos específicos dentro de esa carpeta de ejemplos
+!/Ejemplos Entrada - Salida correctos/*.txt
+
+# 4. Permitir los tipos de archivos de código que quieres rastrear en general
+!*.cpp
+!*.hpp
+!*.git.exe
