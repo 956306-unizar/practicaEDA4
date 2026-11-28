@@ -108,6 +108,7 @@ string formatearFecha(const Fecha &f)
     return format_fecha;
 }
 
+/*
 // Función auxiliar para el "pintado" de la estructra de la instrucción LT
 string mostrarAnuncio(const Anuncio &e)
 {
@@ -119,5 +120,6 @@ string mostrarAnuncio(const Anuncio &e)
 
     return resultado;
 }
+*/
 
 

@@ -35,7 +35,7 @@ Fecha suFinalizacion(const Anuncio &e);
 string formatearFecha(const Fecha &f);
 
 // Función auxiliar para comprobar las funciones implemenetadas
-string mostrarAnuncio(const Anuncio &e);
+//string mostrarAnuncio(const Anuncio &e);
 
 struct Anuncio
 {
@@ -51,7 +51,7 @@ struct Anuncio
     friend Fecha suFinalizacion(const Anuncio &e);
 
     friend string formatearFecha(const Fecha &f);
-    friend string mostrarAnuncio(const Anuncio &e);
+    //friend string mostrarAnuncio(const Anuncio &e);
 
     private:
         string ID;

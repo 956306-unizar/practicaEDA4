@@ -46,8 +46,8 @@ template<typename T> void crear(ColeccionITF<T> &c);
  
 
 /*
-    Si en c no hay ningún ítem con identificador igual al de i, devuelve una colección igual a la
-    resultante de añadir el ítem i a la colección c. En caso contrario, devuelve una colección igual a c.
+    Si en c no hay ningún ítem con identificador igual al de i, añade
+    el ítem i a la colección c. En caso contrario, c no cambia.
 */
 template<typename T> void anadir(ColeccionITF<T> &c, const T &i);
 
@@ -61,8 +61,10 @@ template<typename T> void actualizar(ColeccionITF<T> &c, const T &i);
 
 
 /*
-    Si en c hay algún ítem con identificador igual a ident, devuelve una colección igual a la
-    resultante de borrar ese ítem de la colección c. En caso contrario, devuelve una colección igual a c.
+    Si en c hay algún ítem con identificador(único; no repetido) igual a ident, borra ese item de c.
+    En caso contrario, c se queda como está.
+
+    NUNCA USAR UN ITERADOR YA INICIADO DESPUÉS DE BORRAR UN ELEMENTO - VOLVER A INICIAR ITERADOR
 */
 template<typename T> void borrar(const string &ident, ColeccionITF<T> &c);
 
@@ -88,14 +90,13 @@ template<typename T> string obsoletos(const Fecha &f, const string &separador, c
  
 
 /*
-    Devuelve una colección igual a la resultante de eliminar de c todos los ítems con fecha
-    estrictamente anterior a f.
+    Elimina de c todos los ítems con fecha estrictamente anterior a f.
 */
 template<typename T> void purgar(const Fecha &f, ColeccionITF<T> &c);
 
 
 /*
-    Devuelve verdad si y sólo si en c hay algún ítem i con tema igual a t.
+    Devuelve verdad si y sólo si en c hay algún ítem con tema igual a t.
 */
 template<typename T> bool existeTema(const string &t, const ColeccionITF<T> &c);
 
@@ -149,32 +150,25 @@ template<typename T> bool existeSiguiente(const ColeccionITF<T> &c);
 
 
 /*
-parcial siguiente: colecciónITF c  ITF
-{Devuelve el siguiente ítem a visitar con el iterador de la colección c.
-Parcial: la operación no está definida si no quedan ítems por visitar (no existeSiguiente?(c)).}
-
-parcial avanza: colecciónITF c  colecciónITF
-{Prepara el iterador de la colección c para que se pueda visitar el siguiente ítem, entendiendo
-por siguiente aquel ítem con (lexicográficamente) menor identificador de los todavía no
-visitados.
-Parcial: la operación no está definida si no quedan ítems por visitar (no existeSiguiente?(c)).}
-
-COMBINADAS de manera NO PARCIAL en "siguienteYavanza".
-*/
-
-/*
     Si existe un elemento por visitar en c devuelve TRUE, devuelve dicho elemento por e y avanza el iterador.
-    Si no, devuelve falso.
+    Si no, devuelve falso y e se queda como estaba.
 */
 template<typename T> bool siguienteYavanza(ColeccionITF<T> &c, T &e);
 
 
-// FIN predeclaracion del TAD GENERICO coleccionITF (Fin INTERFAZ)============================================================================
+// FIN INTERFAZ ==============================================================================================================
 
-//PREDECLARAR FUNCIONES AUXILIARES AQUI!!!!!!!!
+//PREDECLARACIÓN FUNCIONES AUXILIARES
+template<typename T> void borrarRec(const string &ident, typename ColeccionITF<T>::Nodo* &raiz, bool &borrado);
+template<typename T> void borrarMax(typename ColeccionITF<T>::Nodo* &raiz, T &dato);
 
+template<typename T> void anadirRec(typename ColeccionITF<T>::Nodo* &raiz, const T &item, bool &anadido);
 
-// DECLARACION DEL TAD GENERICO coleccionITF
+template<typename T> void purgarPostOren(const Fecha &fLim, ColeccionITF<T> &c, typename ColeccionITF<T>::Nodo* &raiz);
+
+template<typename T> void existeTemaPreOren(const string &t, const typename ColeccionITF<T>::Nodo* raiz, bool &encontrado);
+
+// DECLARACION DEL TIPO GENERICO coleccionITF
 template<typename T> struct ColeccionITF{
 
     friend void crear<T>(ColeccionITF<T> &c);
@@ -195,19 +189,18 @@ template<typename T> struct ColeccionITF{
     friend bool existeSiguiente<T>(const ColeccionITF<T> &c);
     friend bool siguienteYavanza<T>(ColeccionITF<T> &c, T &e);
 
-    //FRIEND FUNCIONES AUXILIARES!!!!!!!!
-
 
     private: //declaracion de la representacion interna del tipo
        /*
-        Lista enlazada en memoria dinámica.
-        "primero" es un puntero apunta al primer nodo de la lista. Si la colección está vacía apuntará a NIL.
+        Árbol Binario de Búsqueda en memoria dinámica.
+        "raiz" es un puntero apunta al primer nodo del árbol (la raíz). Si la colección está vacía apuntará a NIL.
         "nElem" lleva la cuenta de cuantos elementos hay en la colección.
-        "iter" es un puntero que servirá como iterador ÚNICAMENTE para las operaciones de este.
+        "iter" es una pila que servirá como iterador.
 
-        "Nodo" es un contenedor para el tipo de dato T y un puntero sig que apunte al siguiente Nodo de la lista. Si
-        no hay más elementos, sig apuntará a NIL.
+        "Nodo" es un contenedor para el tipo de dato T, un puntero al hijo izquierdo del nodo del árbol y otro
+        a su hijo derecho. Si sus hijos son vacíos apuntarán a NIL respectivamente.
         */
+       
        //llamar a nodos asi: typename ColeccionITF<T>::Nodo
         struct Nodo{
             T dato;
@@ -221,13 +214,21 @@ template<typename T> struct ColeccionITF{
         int nElem;
         
         //CAMPOS ITERADOR
-        Pila iter;
+        Pila<abb> iter;
+
+
+        //FRIEND FUNCIONES AUXILIARES
+        friend void borrarRec<T>(const string &ident, typename ColeccionITF<T>::Nodo* &raiz, bool &borrado);
+        friend void borrarMax<T>(typename ColeccionITF<T>::Nodo* &raiz, T &dato);
+        friend void anadirRec<T>(typename ColeccionITF<T>::Nodo* &raiz, const T &item, bool &anadido);
+        friend void purgarPostOren<T>(const Fecha &fLim, ColeccionITF<T> &c, typename ColeccionITF<T>::Nodo* &raiz);
+        friend void existeTemaPreOren<T>(const string &t, const typename ColeccionITF<T>::Nodo* raiz, bool &encontrado);
 };
 
 
 //IMPLEMENTACION DE LAS OPERACIONES DEL TAD GENERICO coleccionITF=============================================================================
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Crea una colección de ITF vacía, sin ítems.
 */
 template<typename T>
@@ -235,63 +236,60 @@ void crear(ColeccionITF<T> &c)
 {
     c.raiz = nullptr;
     c.nElem = 0;
-    c.iter = nullptr;
+    crearVacia(c.iter);
 }
 
 
-/*
-    Si en c no hay ningún ítem con identificador igual al de i, catualiza c a una colección igual a la
-    resultante de añadir (oredenadamente) el ítem i a la colección c inicial.
-    En caso contrario, devuelve una colección igual a c.
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+    Si en c no hay ningún ítem con identificador igual al de i, añade
+    el ítem i a la colección c respetando la definición de abb. En caso contrario, c no cambia.
+
     Además actualizara nElem apropiadamente.
 */
 template<typename T> 
 void anadir(ColeccionITF<T> &c, const T &i)
 {    
-    /*
-    string ident = identificador(i);
-
-    // Si es lista vacia o el primero es mayor, INSERCION AL PRINCIPIO
-    //IMPORTANTE! EVAL. CORTOCIRCUITADA: si c.primero == nullptr no evaluará c.primero->dato con lo que no hara accesos indebidos
-    if (c.primero == nullptr || identificador(c.primero->dato) > ident)
-    {
+    bool anadido = false;
+    anadirRec<T>(c.raiz, i, anadido);
+    if(anadido){
         c.nElem++;
-        typename ColeccionITF<T>::Nodo* nuevoElem = new typename ColeccionITF<T>::Nodo;
-        nuevoElem->dato = i;
-        nuevoElem->sig = c.primero;
-        c.primero = nuevoElem;   
     }
-    
-    // En este caso estaremos ante una lista NO vacía y una lista donde no vamos a insertar al inicio. 
-    else if (identificador(c.primero->dato) < ident)
-    {
-        // Se necesitan dos punteros oruga, para saber la direccion de ambos elementos adyacentes al que vayamos a insertar.
-        // (Al ser enlazada unidireccional no podemos ir hacia atrás)
-        typename ColeccionITF<T>::Nodo* pAux = c.primero;
-        typename ColeccionITF<T>::Nodo* pSig = pAux->sig;
-
-        // Terminaremos cuando pSig sea nullptr (insertar al final) ó cuando encontremos la posición exacta donde insertar (por el medio)
-        while (pSig != nullptr && identificador(pSig->dato) < ident)
-        { 
-            pAux = pSig;
-            pSig = pAux->sig;
-        }
-
-        // Insertamos si hemos llegado al final ó si el identificador no existe
-        if (pSig == nullptr || identificador(pSig->dato) != ident)
-        {
-            c.nElem++;
-            typename ColeccionITF<T>::Nodo* nuevoElem = new typename ColeccionITF<T>::Nodo;
-            nuevoElem->dato = i;
-            nuevoElem->sig = pSig;
-            pAux->sig = nuevoElem;
-        }
-    }
-    */
 }
 
 
 /*
+    Función auxiliar recursiva de anadir. Recorre (siguiendo la definición de abb) el árbol raiz en busca de una hoja 
+    a la cual insertarle un hijo cuyo dato sea item. Si encuentra un nodo cuyo dato tenga identificador igual al de item,
+    deja de buscar y anadido queda a false. En caso contrario se insertatá correctamente y anadido quedara a true.
+*/
+template<typename T> 
+void anadirRec(typename ColeccionITF<T>::Nodo* &raiz, const T &item, bool &anadido){
+
+    if(raiz == nullptr){    //CASO BASE -- hemos llegado al punto de inserción
+
+        raiz = new typename ColeccionITF<T>::Nodo;  //hacemos espacio en memoria para el nodo
+        raiz->dato = item;         //configuramos sus valores
+        raiz->der = nullptr;
+        raiz->izq = nullptr;
+        anadido = true;         //para aumentar nElem
+
+    }else{      //CASO (quizas) RECURSIVO -- hay que seguir buscando un hijo vacío donde ponderlo
+
+        if( identificador(item) < identificador(raiz->dato) ){  //id item < id nodo actual -> hijo izq
+            anadirRec<T>(raiz->izq, item, anadido);
+
+        }else if( identificador(item) > identificador(raiz->dato) ){ //id item > id nodo actual -> hijo dcho
+            anadirRec<T>(raiz->der, item, anadido);
+
+        }else{  //id item == id nodo actual -> no añadir, eso es cosa de actualizar()
+            anadido = false;    //FIN DE LA RECUSIVIDAD y devuelve falso
+        }
+    }
+
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Busca si existe un dato de tipo T, en los nodos que almacena la coleccionITF, que tenga el mismo identificador que el dato de tipo T
     proporcionado (i). De ser así, el dato que ya se encuentra en la coleccionITF se actualizará con el del parámetro i.
     Al solo cambiarse el valor de la variable "dato" dentro del nodo que se encuentra en dicha posición, no hará falta hacer más cambios
@@ -322,56 +320,97 @@ void actualizar(ColeccionITF<T> &c, const T &i) {
 }
 
 
-/*
-    Si en c hay algún ítem con identificador igual a ident, actualiza la collecion c a una coleccion igual
-    pero sin ese ítem. En caso contrario, c se queda como está.
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+    Si en c hay algún ítem con identificador(único; no repetido) igual a ident, borra ese item de c.
+    En caso contrario, c se queda como está.
 
-    También se encarga de actualizar nElem y resuelve posibles casos conflictivos con el iterador
-    Ejemplo: [   si ">X<" es el iterador: (1 >2< 3 4 5 6) y borramos el 2 --> (1 >3< 4 5 6)   ]
+    También se encarga de actualizar nElem.
+    
+    NUNCA USAR UN ITERADOR YA INICIADO DESPUÉS DE BORRAR UN ELEMENTO
+    Si el puntero al elemento X se encuentra en la pila del iterador y X se borra, el puntero en la pila
+    estará apuntando a una direccion de memoria liberada, lo que es una violación de acceso si se usa.
 */
 template<typename T> 
 void borrar(const string &ident, ColeccionITF<T> &c)
 {      
-    borrarRec(ident, c.raiz);
-
-    /*  ESTO VA EN BORRARREC
-
-    typename ColeccionITF<T>::abb aux = c.raiz
-    if(c.raiz != nullptr){
-        
-        if(ident == aux->dato){ //es este elemento -- CASO BASE
-            //el comportamiento depende de que hijos tenga o no
-
-        }else if(ident < aux->dato){    //estara por el arbol izdo
-            //llamada recursiva a borrar en el hijo dcho
-            borrarRec(ident, c.raiz->der)
-
-        }else{  //estara por el arbol dcho
-            //llamada recursiva a borrar en el hijo dcho
-        }
-    }
-    */
-}
-
-template<typename T>
-void borrarRec(const string &ident, typename ColeccionITF<T>::abb &raiz){
-    if(c.raiz != nullptr){
-        
-        if(ident == raiz->dato){ //es este elemento -- CASO BASE
-            //el comportamiento depende de que hijos tenga o no
-
-        }else if(ident < raiz->dato){    //estara por el arbol izdo
-            //llamada recursiva a borrar en el hijo dcho
-            borrarRec(ident, raiz->der);
-
-        }else{  //estara por el arbol dcho
-            //llamada recursiva a borrar en el hijo dcho
-        }
+    bool borrado = false;
+    borrarRec<T>(ident, c.raiz, borrado);
+    if(borrado){
+        c.nElem--;
     }
 }
 
 
 /*
+    Función auxiliar recursiva de borrar Y purgarPostOrden. Recorre en preOrden el árbol "raiz" en busca de un nodo con identificador de su dato == ident.
+    Si lo encuentra, borra el dato, respetando la definición de abb, y deja de buscar, dejando borrado a true. Si no lo encuentra después
+    de recorrer todo el arbol, deja borrado a false;
+*/
+template<typename T>
+void borrarRec(const string &ident, typename ColeccionITF<T>::Nodo* &raiz, bool &borrado){
+    if(raiz != nullptr && !borrado){    //no hay repeticiones - en q se borre 1 PARAR
+        
+        if(ident == suIdentificador(raiz->dato) ){ //es este elemento -- CASO BASE -- borrar
+            //el comportamiento depende de que hijos tenga o no
+            typename ColeccionITF<T>::abb aux;
+
+            if(raiz->izq == nullptr){   //no tiene hijo izquierdo(hijo dcho unknown)
+                //su hijo derecho será la nueva raiz sin romper la estructura de abb (si es nil también será correcto)
+                aux = raiz;
+                raiz = raiz->der;
+                delete(aux);
+
+
+            }else if(raiz->der == nullptr){ //tiene hijo izquierdo PERO NO DERECHO
+                //su hijo izquierdo será la nueva raiz sin romper la estructura de abb
+                aux = raiz;
+                raiz = raiz->izq;
+                delete(aux);
+
+            }else{  //tiene dos hijos -> la nueva raiz será o el máximo del hijo izquierdo o el mínimo del hijo derecho para respetar el abb
+                //el max del hijo izqdo - su más derecho               
+                borrarMax<T>(raiz->izq, raiz->dato);
+            }
+            borrado = true;    //para actualizar nElem en la funcion borrar()
+
+        }else if(ident < suIdentificador(raiz->dato) ){    //estara por el arbol izdo
+            //llamada recursiva a borrar en el hijo izdo
+            borrarRec<T>(ident, raiz->izq, borrado);
+
+        }else{  //estara por el arbol dcho
+            //llamada recursiva a borrar en el hijo dcho
+            borrarRec<T>(ident, raiz->der,borrado);
+
+        }
+    }else{
+        borrado = false;
+    }
+}
+
+
+/*
+    Función auxiliar recursiva de borrarRec. Raiz será inicialmente el hijo izquierdo del elemento a borrar E, y dato el dato de E.
+    borrarMax encontrará el máximo del subarbol izquierdo de E, intercambiará el dato de E por el máximo del subar. izq. y borrá ese elemento.
+*/
+template<typename T>
+void borrarMax(typename ColeccionITF<T>::Nodo* &raiz, T &dato){
+
+    typename ColeccionITF<T>::abb aux;
+
+    if(raiz->der == nullptr){   //CASO BASE -- si no hay hijo derecho, ya tenemos el máximo
+        //la nueva raiz es el primer hijo izquierdo -> como no hay hijo dcho seguirá respetando la definicion de abb
+        dato = raiz->dato;
+        aux = raiz;
+        raiz = raiz->izq;
+        delete(aux);
+
+    }else{  //CASO REC -- seguir buscando el máximo bajando por el derecho
+        borrarMax(raiz->der, dato);
+    }
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Devuelve verdad si y sólo si en c hay algún ítem con identificador igual al parámetro ident.
     Para ello, recorre toda la colección hasta encontrar el elemento, donde no buscará más y se saldrá,
     o hasta que llegue al fin de la colección, significando que no encontró el elemento en la colección.
@@ -416,7 +455,7 @@ bool esta(const string &ident, const ColeccionITF<T> &c) {
 
 }
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Devuelve el elemento de tipo T con el id especificado en el parámetro ident que se encuentra en la colección.
     Como precondición el elemento de tipo T DEBERÁ existir y estar dentro de la colección, ya que la función
     recorre toda la colección, asumiendo que esto es así, hasta hallar el elemento.
@@ -450,7 +489,7 @@ T obtenerITF(const string &ident, const ColeccionITF<T> &c) {
 }
 
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Devuelve la cadena resultante de concatenar los identificadores de todos los ítems que hay en c
     con fecha estrictamente anterior a f, y separados entre sí por la cadena separador.
     Para ello recorre toda la colección y agrega a un string, que comienza vacío (""), todos los IDs,
@@ -489,89 +528,79 @@ string obsoletos(const Fecha &f, const string &separador, const ColeccionITF<T> 
 }
  
 
-/*
-    Devuelve una colección igual a la resultante de eliminar de c todos los ítems con fecha
-    estrictamente anterior a f.
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+    Elimina de c todos los ítems con fecha estrictamente anterior a f.
 */
 template<typename T>
 void purgar(const Fecha &f, ColeccionITF<T> &c) {
-    /*
-    if(c.primero != nullptr) {
-
-        typename ColeccionITF<T>::Nodo* pAnt = nullptr;
-        typename ColeccionITF<T>::Nodo* pAux = c.primero;
-
-        typename ColeccionITF<T>::Nodo* pDeleter;
-
-        while(pAux != nullptr) {
-
-            if(anterior(fecha(pAux->dato), f)) {
-
-                if(pAux == c.primero) {
-
-                    c.primero = c.primero->sig;
-
-                } else {
-
-                    pAnt->sig = pAux->sig;
-
-                }
-
-                pDeleter = pAux;
-                pAux = pAux->sig;
-
-                if(c.iter == pDeleter) {
-
-                    c.iter = pAux;
-
-                }
-
-                delete(pDeleter);
-                c.nElem--;
-
-            } else {
-
-                pAnt = pAux;
-                pAux = pAux->sig;
-
-            }
-
-        }
-
-    }
-    */
-
+    //Recorrido COMPLETO ya que están ordenados por id, no fecha y hay que encontrar todos
+    purgarPostOren<T>(f, c, c.raiz);
 }
 
+
 /*
-    Devuelve verdad si y sólo si en c hay algún ítem i con tema igual a t.
+    Función auxiliar recursiva de purgar. Recorre en postorden el abb raiz y borra aquellos nodos cuya fecha del dato sea anterior a fLim
+*/
+template<typename T>
+void purgarPostOren(const Fecha &fLim, ColeccionITF<T> &c, typename ColeccionITF<T>::Nodo* &raiz){
+    //postorden{   if(dato.fecha < fechaLim){ borrar(dato) }  }
+    
+    if(raiz != nullptr){    //CASO BASE - nodo vacío - parar
+        // CASO RECURSIVO -- recorrido en POSTorden - 1)HijoIzq, 2)HijoDcho,  3)Raiz - RAIZ EL ÚLTIMO, por si hay que borrarla
+        
+        //HijoIzq
+        purgarPostOren<T>(fLim, c, raiz->izq);
+        //HijoDcho
+        purgarPostOren<T>(fLim, c, raiz->der);
+        //Raiz
+        if( anterior(fecha(raiz->dato), fLim) ){ //si la fecha del nodo actual es anterior a la de Límite -> borrar
+            bool borrado = false;
+            borrarRec<T>( identificador(raiz->dato), raiz, borrado );   //borrarRec porque Borrar recorrería toda c otra vez y solo queremos borrar en raiz
+            if(borrado){
+                c.nElem--;
+            }
+        } 
+    }
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
+    Devuelve verdad si y sólo si en c hay algún ítem con tema igual a t.
 */
 template<typename T>
 bool existeTema(const string &t, const ColeccionITF<T> &c) {
-    /*
-    bool existe = false;
-
-    typename ColeccionITF<T>::Nodo* pAux = c.primero;
-
-    while(pAux != nullptr && !existe) {
-
-        if(tema(pAux->dato) == t) {
-            existe = true;
-
-        } else {
-
-            pAux = pAux->sig;
-
-        }
-
-    }
-
-    return existe;
-    */
+    //Recorrido COMPLETO CON STOP ya que están ordenados por id, no tema, pero cuando lo encuentre no hay propósito en buscar más
+    bool encontrado = false;
+    existeTemaPreOren<T>(t, c.raiz, encontrado);
+    return encontrado;
 }
 
 
 /*
+    Funcion auxiliar recursiva de existeTema. Busca en preorden un solo item en el abb raiz con tema == t, si lo encuentra en el nodo de raiz,
+    para de buscar y encontrado queda a verdadero. Si no lo encuentra, seguirá recorriendo el arbol. Si no lo ha encontrado en todo el
+    árbol, encontrado se quedará a falso
+
+    La raiz(puntero a nodo) no se pasa por referencia porque se tiene que llamar mediante c.raiz en existeTema, donde c es const.
+    Al ser raiz un puntero, no es grave, ya que en vez de pasar un PUNTERO a puntero a Nodo(paso por referencia) pasa un PUNTERO a Nodo.
+*/
+template<typename T>
+void existeTemaPreOren(const string &t, const typename ColeccionITF<T>::Nodo* raiz, bool &encontrado){   
+    //preorden(mientras !encontrado){   encontrado = ( dato.tema == t )  }
+
+    if( !(raiz == nullptr || encontrado) ){    //CASO BASE - nodo vacío O ya se ha encontrado - parar
+        // CASO RECURSIVO -- recorrido en preOrden: 1)Raiz, 2)HijoIzq, 3)HijoDcho
+        //Raiz
+        encontrado = ( t == tema(raiz->dato) ); //si el tema del nodo es el que buscamos -> encontrado
+        //HijoIzq
+        existeTemaPreOren<T>(t, raiz->izq, encontrado);
+        //HijoDcho
+        existeTemaPreOren<T>(t, raiz->der, encontrado);
+    }
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Devuelve la cadena resultante de concatenar los identificadores de todos los ítems que hay en c
     con tema igual a t, y separados entre sí por la cadena separador.
 */
@@ -611,7 +640,7 @@ string delTema(const string &t, const string &separador, const ColeccionITF<T> &
 }
 
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Devuelve una colección igual a la resultante de eliminar de c todos los ítems i cuyo tema es igual a t.
 */
 template<typename T>
@@ -666,7 +695,7 @@ void zanjarTema(const string &t, ColeccionITF<T> &c) {
 
 
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Devuelve verdad si y sólo si c no contiene ningún ítem.
 */
 template<typename T>
@@ -677,7 +706,7 @@ bool esVacia(const ColeccionITF<T> &c) {
 }
 
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Devuelve el número de ítems que hay en la colección c.
 */
 template<typename T>
@@ -692,7 +721,7 @@ int tamano(const ColeccionITF<T> &c) {
 // --- FUNCIONES DEL ITERADOR ---
 
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Inicializa el iterador para recorrer los ítems de la colección c, de forma que el siguiente
     ítem a visitar sea el que tiene el identificador (lexicográficamente) menor (situación de no
     haber visitado ningún ítem).
@@ -704,7 +733,7 @@ void iniciarIterador(ColeccionITF<T> &c){
 }
 
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Devuelve verdad si queda algún ítem por visitar con el iterador de la colección c (si el iterador no está apuntando a NIL),
     devuelve falso si ya se ha visitado el último ítem.
 */
@@ -715,7 +744,7 @@ bool existeSiguiente(const ColeccionITF<T> &c){
 }
 
 
-/*
+/*---------------------------------------------------------------------------------------------------------------------------------------------------
     Si existe un elemento por visitar en c devuelve TRUE, devuelve dicho elemento por e y avanza el iterador.
     Si no, devuelve falso.
 */

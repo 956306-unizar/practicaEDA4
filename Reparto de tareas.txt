@@ -6,44 +6,73 @@
 ACTUALIZAR OPERACIONES PARA USO DE ARBOLES BINARIOS DE BÚSQUEDA
 ----------------------------------------------------------------------
 
-    ABEL: 
+----ABEL: 
 
-    [ ] Función obtenerITF
-    [ ] Función zanjarTema
-    [ ] Función iniciarIterador
-    [ ] Función esVacía?
-    [ ] Función obsoletos
+    [ ] Función obtenerITF      -test[ ]
+    [ ] Función zanjarTema      -test[ ]
+    [ ] Función iniciarIterador -test[ ]
+    [ ] Función esVacía?        -test[ ]
+    [ ] Función obsoletos       -test[ ]
+    
+    [ ] Completar documentación [interfaz-implementación]
+        [ - ] Función obtenerITF
+        [ - ] Función zanjarTema
+        [ - ] Función iniciarIterador
+        [ - ] Función esVacía?
+        [ - ] Función obsoletos
+
+    [ ] Completar documentación de las AUXILIARES [implementación]
+        ...
+
+----DAVID:
+
+    [X] Función existeTema  -test[x]
+    [X] Función borrar      -test[x]
+    [X] Función purgar      -test[x]
+    [X] Función añadir      -test[x]
+    [X] Función tamaño      -test[x]
+
+    [X] Completar documentación [interfaz-implementación]
+        [X-X] Función existeTema
+        [X-X] Función borrar
+        [X-X] Función purgar
+        [X-X] Función añadir
+        [X-X] Función tamaño
+
+    [X] Completar documentación de las AUXILIARES [implementación]
+        [X] Función borrarRec
+        [X] Función borrarMax
+        [X] Función anadirRec
+        [X] Función purgarPostOrden
+        [X] Función existeTemaPreOrden
 
 
-    DAVID:
-
-    [ ] Función existeTema
-    [ ] Función borrar
-    [ ] Función purgar
-    [ ] Función añadir
-    [ ] Función tamaño
-
-
-    ARIÁN: 
+----ARIÁN: 
     
     [ ] Función actualizar
     [ ] Función eRisteSiguiente?
     [ ] Función delTema
     [ ] Función está?
     [ ] Función siguienteYavanza
-        
+
+    [ ] Completar documentación [interfaz-implementación]
+        [ - ] Función actualizar
+        [ - ] Función eRisteSiguiente?
+        [ - ] Función delTema
+        [ - ] Función está?
+        [ - ] Función siguienteYavanza
+
+    [ ] Completar documentación de las AUXILIARES [implementación]
+        ...
         
     [X] Función crear
 
 
 ======================================================================
-Leyenda: [X] Hecho | [R] En revision | [ ] Pendiente / En proceso | [?] En espera de respuesta a duda
+Leyenda: [X] Hecho | [R] En revision | [ ] Pendiente / En proceso | [?] En espera de respuesta a duda | [inicial del nombre] = "por mi parte revisadas"
 ======================================================================
 
 ----------------------------------------------------------------------
 OTROS PUNTOS
 ----------------------------------------------------------------------
-
-
-
-[inicial del nombre] = "por mi parte revisadas"
+    [ ] Revisar todos los comentarios
